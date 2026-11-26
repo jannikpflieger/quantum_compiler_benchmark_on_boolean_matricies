@@ -45,7 +45,7 @@
       <li><b>Cirq and BQSKit, which were excluded in 2022, now work</b>, with limits. Cirq's default path still leaves gates on more than three
       qubits undecomposed, but an explicit Shannon decomposition works up to 7 or 8 qubits within the time limit. BQSKit finds optimal or near-optimal circuits for
       3 qubits, but its numerical synthesis does not finish within 300 s from 4 qubits on (5 for XOR).</li>
-      <li><b>The correctness check found real errors.</b> Qrisp's Gray-code synthesis returns a wrong XOR circuit from 4 qubits on.
+      <li><b>The correctness check found real errors.</b> Qrisp's Gray-code synthesis returns a wrong XOR circuit from 4 qubits on (cause and fix in the <a href="#discussion">discussion</a>).
       quilc stops with numerical errors for some 7 and 8 qubit cases.</li>
     </ul>
   </div>
@@ -208,6 +208,16 @@
     <p>Restricted layouts add SWAP overhead, typically a factor of about 1.5 to 4.5 over the fully connected case for the same compiler.
     The grid, which offers spare qubits and more connections, is usually between line and fully connected. The ranking of the
     compilers stays mostly the same across layouts.</p>
+    <h3>The Qrisp Gray-code error</h3>
+    <p>For XOR with 4 or more qubits, the Gray-code circuits from Qrisp 0.9.10 compute the right output bit but change the input
+    register (for example |010⟩ comes back as |110⟩). The cause is in <code>single_qb_traversal</code> in
+    <code>qrisp/alg_primitives/logic_synthesis/gray_synthesis.py</code>. Gray synthesis walks through the parity functions
+    that carry a phase and applies one CNOT per step, so consecutive steps must differ in exactly one bit and the walk must end at 0.
+    The walk returned by the travelling-salesman heuristic can contain larger jumps (for 3-input XOR it ends with 110 → 000),
+    but still only one CNOT is applied per step, so the parity is not undone. Filling in the missing single-bit steps fixes all
+    65 truth tables we tested. A correct <i>n</i>-input XOR then needs 4<i>n</i> − 2 CNOTs instead of the 3<i>n</i> of the wrong circuits. A reproduction and a patch are in the
+    <a href="https://github.com/jannikpflieger/quantum_compiler_benchmark_on_boolean_matricies/tree/main/notes/qrisp-gray-bug">repository</a>.
+    The benchmark itself uses the unmodified Qrisp release, so the wrong results are kept and marked.</p>
     <h3>Small functions</h3>
     <p>All compilers recognise that always-0, always-1 and identity need no or one two-qubit gate, with two exceptions: BQSKit returns two
     CNOTs that cancel for always-0, and Qrisp's Gray synthesis uses two CNOTs for the identity. For the two-of-three (majority) function,

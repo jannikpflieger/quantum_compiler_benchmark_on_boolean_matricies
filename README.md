@@ -34,6 +34,7 @@ also checked against the layout.
 | `bench/thesis_data.py` | Extracts the 2022 numbers from the thesis spreadsheets (not included) |
 | `results/` | Raw results (`results.jsonl`), 2022 numbers, package versions |
 | `docs/` | The GitHub Pages site (plain HTML, CSS and JavaScript) |
+| `notes/qrisp-gray-bug/` | Reproduction and proposed fix for the Qrisp Gray-synthesis error |
 
 ## Running it
 
