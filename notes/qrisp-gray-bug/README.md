@@ -1,6 +1,11 @@
 # Qrisp: Gray-code logic synthesis returns wrong oracles
 
-Found while running the benchmark. Tested with qrisp 0.9.10 and Python 3.13.
+Found while running the benchmark. Confirmed with qrisp 0.9.10 (latest PyPI release) and with
+upstream `main` at commit 81fda69 (2026-11-25), whose `gray_synthesis.py` is identical. Confirmed both with
+Qiskit's simulator (`repro.py`) and with Qrisp alone (`repro_qrisp_only.py`). It also affects the documented
+`QuantumDictionary.load`, whose default `synth_method` is `"gray"`. A search of Qrisp's issues and pull requests
+(gray, truth table, q_synth, gray_synthesis, QuantumDictionary, logic synthesis, hamming, TruthTable) found no
+existing report. `ISSUE_DRAFT.md` contains a ready-to-file issue text.
 
 ## Symptom
 
@@ -83,7 +88,9 @@ optimisation, not needed for correctness.
 
 ## Files
 
-- `repro.py`: minimal reproduction (`python repro.py gray` / `python repro.py pprm`)
+- `repro.py`: minimal reproduction, simulated with Qiskit (`python repro.py gray` / `python repro.py pprm`)
+- `repro_qrisp_only.py`: the same check with Qrisp's own simulator, plus `QuantumDictionary` (`--fixed` applies the patch in memory)
+- `ISSUE_DRAFT.md`: issue text for the Qrisp repository
 - `test_fix.py`: checks 65 truth tables, with the original code or with the fix applied in memory
 - `gray_synthesis_fixed.py`: the patched module (qrisp 0.9.10)
 - `fix.patch`: the change as a unified diff
