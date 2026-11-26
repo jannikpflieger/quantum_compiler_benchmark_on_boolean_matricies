@@ -215,7 +215,7 @@
     that carry a phase and applies one CNOT per step, so consecutive steps must differ in exactly one bit and the walk must end at 0.
     The walk returned by the travelling-salesman heuristic can contain larger jumps (for 3-input XOR it ends with 110 → 000),
     but still only one CNOT is applied per step, so the parity is not undone. Filling in the missing single-bit steps fixes all
-    65 truth tables we tested, at the cost of one extra CNOT per input for XOR. A reproduction and a patch are in the
+    65 truth tables we tested. A correct <i>n</i>-input XOR then needs 4<i>n</i> − 2 CNOTs instead of the 3<i>n</i> of the wrong circuits. A reproduction and a patch are in the
     <a href="https://github.com/jannikpflieger/quantum_compiler_benchmark_on_boolean_matricies/tree/main/notes/qrisp-gray-bug">repository</a>.
     The benchmark itself uses the unmodified Qrisp release, so the wrong results are kept and marked.</p>
     <h3>Small functions</h3>

@@ -75,8 +75,9 @@ tr_seq = walk
 
 For the example the walk becomes `[0, 4, 6, 7, 6, 2, 0]`. With this change all
 65 test truth tables are correct (`python test_fix.py fixed`).
-The cost is one extra CNOT per extra input for XOR (10 instead of 9 CNOTs
-for 3 inputs); the wrong circuits were cheaper only because they skipped steps.
+The fixed circuits are larger: a correct n-input XOR needs 4n − 2 CNOTs
+(10 for 3 inputs) instead of 3n (9). The wrong circuits were cheaper only because
+they skipped steps.
 A better tour in `hamming_tsp` could recover some of this. That is an
 optimisation, not needed for correctness.
 
