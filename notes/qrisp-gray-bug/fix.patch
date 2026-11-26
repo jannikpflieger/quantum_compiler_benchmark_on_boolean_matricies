@@ -1,0 +1,18 @@
+--- a/qrisp/alg_primitives/logic_synthesis/gray_synthesis.py	2026-11-26 23:01:22.371265084 +0000
++++ b/qrisp/alg_primitives/logic_synthesis/gray_synthesis.py	2026-11-26 23:01:22.388546493 +0000
+@@ -240,6 +240,15 @@
+     if tr_seq[0] != 0:
+         tr_seq = [0] + tr_seq
+ 
++    # Each step below flips exactly one bit (one CNOT), so consecutive entries must be
++    # Hamming neighbours. hamming_tsp does not guarantee this (e.g. for the locations
++    # [0, 6, 7] it returns [0, 4, 6, 7, 6], and closing the tour adds the jump 6 -> 0).
++    # Insert the missing intermediate steps, and drop repeated entries.
++    walk = [tr_seq[0]]
++    for loc in tr_seq[1:]:
++        walk += hamming_movement(walk[-1], loc, bit_amount)
++    tr_seq = walk
++
+     # Turn into binaries
+     tr_seq_bin = [int_as_array(x, bit_amount) for x in tr_seq]
+ 
