@@ -1,0 +1,1841 @@
+[
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "fully",
+"n_qubits": 3,
+"two_qubit": 6
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "fully",
+"n_qubits": 4,
+"two_qubit": 14
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "fully",
+"n_qubits": 5,
+"two_qubit": 36
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "fully",
+"n_qubits": 6,
+"two_qubit": 92
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "fully",
+"n_qubits": 7,
+"two_qubit": 188
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "fully",
+"n_qubits": 8,
+"two_qubit": 380
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "fully",
+"n_qubits": 9,
+"two_qubit": 764
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "fully",
+"n_qubits": 10,
+"two_qubit": 1532
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "fully",
+"n_qubits": 11,
+"two_qubit": 3068
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "fully",
+"n_qubits": 12,
+"two_qubit": 6140
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "fully",
+"n_qubits": 13,
+"two_qubit": 12284
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "fully",
+"n_qubits": 14,
+"two_qubit": 24572
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "fully",
+"n_qubits": 15,
+"two_qubit": 49148
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 3,
+"two_qubit": 6
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 4,
+"two_qubit": 14
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 5,
+"two_qubit": 36
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 6,
+"two_qubit": 80
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 7,
+"two_qubit": 120
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 8,
+"two_qubit": 168
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 9,
+"two_qubit": 224
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 10,
+"two_qubit": 288
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 11,
+"two_qubit": 360
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 12,
+"two_qubit": 440
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 13,
+"two_qubit": 528
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 14,
+"two_qubit": 624
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 15,
+"two_qubit": 728
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 16,
+"two_qubit": 840
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 17,
+"two_qubit": 960
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 18,
+"two_qubit": 1088
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 19,
+"two_qubit": 1224
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "fully",
+"n_qubits": 20,
+"two_qubit": 1368
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "fully",
+"n_qubits": 3,
+"two_qubit": 7,
+"xy": 0
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "fully",
+"n_qubits": 4,
+"two_qubit": 52,
+"xy": 0
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "fully",
+"n_qubits": 5,
+"two_qubit": 202,
+"xy": 99
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "fully",
+"n_qubits": 6,
+"two_qubit": 883,
+"xy": 385
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "fully",
+"n_qubits": 7,
+"two_qubit": 3728,
+"xy": 1546
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "fully",
+"n_qubits": 8,
+"two_qubit": 15484,
+"xy": 6198
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "ring",
+"n_qubits": 3,
+"two_qubit": 6
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "ring",
+"n_qubits": 4,
+"two_qubit": 28
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "ring",
+"n_qubits": 5,
+"two_qubit": 67
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "ring",
+"n_qubits": 6,
+"two_qubit": 191
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "ring",
+"n_qubits": 7,
+"two_qubit": 430
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "ring",
+"n_qubits": 8,
+"two_qubit": 871
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "ring",
+"n_qubits": 9,
+"two_qubit": 1776
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "ring",
+"n_qubits": 10,
+"two_qubit": 3587
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "ring",
+"n_qubits": 11,
+"two_qubit": 7300
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "ring",
+"n_qubits": 12,
+"two_qubit": 14655
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "ring",
+"n_qubits": 13,
+"two_qubit": 28725
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "ring",
+"n_qubits": 14,
+"two_qubit": 60298
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "ring",
+"n_qubits": 15,
+"two_qubit": 120320
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "ring",
+"n_qubits": 3,
+"two_qubit": 6
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "ring",
+"n_qubits": 4,
+"two_qubit": 26
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "ring",
+"n_qubits": 5,
+"two_qubit": 69
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "ring",
+"n_qubits": 6,
+"two_qubit": 167
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "ring",
+"n_qubits": 7,
+"two_qubit": 288
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "ring",
+"n_qubits": 8,
+"two_qubit": 420
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "ring",
+"n_qubits": 9,
+"two_qubit": 593
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "ring",
+"n_qubits": 10,
+"two_qubit": 795
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "ring",
+"n_qubits": 3,
+"two_qubit": 9,
+"xy": 0
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "ring",
+"n_qubits": 4,
+"two_qubit": 67,
+"xy": 24
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "ring",
+"n_qubits": 5,
+"two_qubit": 539,
+"xy": 427
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "ring",
+"n_qubits": 6,
+"two_qubit": 2963,
+"xy": 2411
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "line",
+"n_qubits": 3,
+"two_qubit": 7
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "line",
+"n_qubits": 4,
+"two_qubit": 36
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "line",
+"n_qubits": 5,
+"two_qubit": 75
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "line",
+"n_qubits": 6,
+"two_qubit": 216
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "line",
+"n_qubits": 7,
+"two_qubit": 424
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "line",
+"n_qubits": 8,
+"two_qubit": 854
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "line",
+"n_qubits": 9,
+"two_qubit": 1822
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "line",
+"n_qubits": 10,
+"two_qubit": 3593
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "line",
+"n_qubits": 11,
+"two_qubit": 7770
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "line",
+"n_qubits": 12,
+"two_qubit": 14778
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "line",
+"n_qubits": 3,
+"two_qubit": 9
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "line",
+"n_qubits": 4,
+"two_qubit": 26
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "line",
+"n_qubits": 5,
+"two_qubit": 90
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "line",
+"n_qubits": 6,
+"two_qubit": 185
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "line",
+"n_qubits": 7,
+"two_qubit": 300
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "line",
+"n_qubits": 8,
+"two_qubit": 447
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "line",
+"n_qubits": 9,
+"two_qubit": 632
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "line",
+"n_qubits": 10,
+"two_qubit": 843
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "line",
+"n_qubits": 3,
+"two_qubit": 7,
+"xy": 2
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "line",
+"n_qubits": 4,
+"two_qubit": 90,
+"xy": 47
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "line",
+"n_qubits": 5,
+"two_qubit": 707,
+"xy": 633
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "line",
+"n_qubits": 6,
+"two_qubit": 3578,
+"xy": 3159
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "grid",
+"n_qubits": 3,
+"two_qubit": 9
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "grid",
+"n_qubits": 4,
+"two_qubit": 18
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "grid",
+"n_qubits": 5,
+"two_qubit": 43
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "grid",
+"n_qubits": 6,
+"two_qubit": 139
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "grid",
+"n_qubits": 7,
+"two_qubit": 300
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "grid",
+"n_qubits": 8,
+"two_qubit": 553
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "grid",
+"n_qubits": 9,
+"two_qubit": 1115
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "grid",
+"n_qubits": 10,
+"two_qubit": 2316
+},
+{
+"compiler": "qiskit",
+"function": "and",
+"topology": "grid",
+"n_qubits": 11,
+"two_qubit": 3929
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "grid",
+"n_qubits": 3,
+"two_qubit": 9
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "grid",
+"n_qubits": 4,
+"two_qubit": 20
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "grid",
+"n_qubits": 5,
+"two_qubit": 60
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "grid",
+"n_qubits": 6,
+"two_qubit": 143
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "grid",
+"n_qubits": 7,
+"two_qubit": 210
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "grid",
+"n_qubits": 8,
+"two_qubit": 312
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "grid",
+"n_qubits": 9,
+"two_qubit": 431
+},
+{
+"compiler": "tket",
+"function": "and",
+"topology": "grid",
+"n_qubits": 10,
+"two_qubit": 561
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "grid",
+"n_qubits": 3,
+"two_qubit": 9,
+"xy": 4
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "grid",
+"n_qubits": 4,
+"two_qubit": 96,
+"xy": 51
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "grid",
+"n_qubits": 5,
+"two_qubit": 389,
+"xy": 293
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "grid",
+"n_qubits": 6,
+"two_qubit": 1443,
+"xy": 1099
+},
+{
+"compiler": "pyquil",
+"function": "and",
+"topology": "grid",
+"n_qubits": 7,
+"two_qubit": 17475,
+"xy": 15727
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "fully",
+"n_qubits": 3,
+"two_qubit": 7
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "fully",
+"n_qubits": 4,
+"two_qubit": 21
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "fully",
+"n_qubits": 5,
+"two_qubit": 57
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "fully",
+"n_qubits": 6,
+"two_qubit": 207
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "fully",
+"n_qubits": 7,
+"two_qubit": 395
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "fully",
+"n_qubits": 8,
+"two_qubit": 775
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "fully",
+"n_qubits": 9,
+"two_qubit": 1539
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "fully",
+"n_qubits": 10,
+"two_qubit": 3731
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "fully",
+"n_qubits": 11,
+"two_qubit": 6799
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "fully",
+"n_qubits": 12,
+"two_qubit": 12939
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "fully",
+"n_qubits": 3,
+"two_qubit": 16
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "fully",
+"n_qubits": 4,
+"two_qubit": 98
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "fully",
+"n_qubits": 5,
+"two_qubit": 540
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "fully",
+"n_qubits": 6,
+"two_qubit": 2480
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "fully",
+"n_qubits": 7,
+"two_qubit": 7560
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "fully",
+"n_qubits": 3,
+"two_qubit": 12,
+"xy": 0
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "fully",
+"n_qubits": 4,
+"two_qubit": 67,
+"xy": 0
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "fully",
+"n_qubits": 5,
+"two_qubit": 281,
+"xy": 57
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "fully",
+"n_qubits": 6,
+"two_qubit": 1159,
+"xy": 312
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "fully",
+"n_qubits": 7,
+"two_qubit": 4943,
+"xy": 1230
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "fully",
+"n_qubits": 8,
+"two_qubit": 17343,
+"xy": 4909
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "ring",
+"n_qubits": 3,
+"two_qubit": 7
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "ring",
+"n_qubits": 4,
+"two_qubit": 47
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "ring",
+"n_qubits": 5,
+"two_qubit": 103
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "ring",
+"n_qubits": 6,
+"two_qubit": 437
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "ring",
+"n_qubits": 7,
+"two_qubit": 921
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "ring",
+"n_qubits": 8,
+"two_qubit": 1832
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "ring",
+"n_qubits": 9,
+"two_qubit": 3659
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "ring",
+"n_qubits": 10,
+"two_qubit": 9076
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "ring",
+"n_qubits": 11,
+"two_qubit": 16173
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "ring",
+"n_qubits": 3,
+"two_qubit": 18
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "ring",
+"n_qubits": 4,
+"two_qubit": 182
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "ring",
+"n_qubits": 5,
+"two_qubit": 1056
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "ring",
+"n_qubits": 6,
+"two_qubit": 5447
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "ring",
+"n_qubits": 7,
+"two_qubit": 17958
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "ring",
+"n_qubits": 3,
+"two_qubit": 12,
+"xy": 0
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "ring",
+"n_qubits": 4,
+"two_qubit": 101,
+"xy": 36
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "ring",
+"n_qubits": 5,
+"two_qubit": 699,
+"xy": 492
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "ring",
+"n_qubits": 6,
+"two_qubit": 3784,
+"xy": 2943
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "line",
+"n_qubits": 3,
+"two_qubit": 10
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "line",
+"n_qubits": 4,
+"two_qubit": 36
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "line",
+"n_qubits": 5,
+"two_qubit": 113
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "line",
+"n_qubits": 6,
+"two_qubit": 473
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "line",
+"n_qubits": 7,
+"two_qubit": 912
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "line",
+"n_qubits": 8,
+"two_qubit": 1869
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "line",
+"n_qubits": 9,
+"two_qubit": 3719
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "line",
+"n_qubits": 10,
+"two_qubit": 8715
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "line",
+"n_qubits": 11,
+"two_qubit": 15847
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "line",
+"n_qubits": 3,
+"two_qubit": 33
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "line",
+"n_qubits": 4,
+"two_qubit": 200
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "line",
+"n_qubits": 5,
+"two_qubit": 1224
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "line",
+"n_qubits": 6,
+"two_qubit": 5825
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "line",
+"n_qubits": 3,
+"two_qubit": 13,
+"xy": 4
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "line",
+"n_qubits": 4,
+"two_qubit": 144,
+"xy": 83
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "line",
+"n_qubits": 5,
+"two_qubit": 1025,
+"xy": 843
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "line",
+"n_qubits": 6,
+"two_qubit": 6872,
+"xy": 6023
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "grid",
+"n_qubits": 3,
+"two_qubit": 10
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "grid",
+"n_qubits": 4,
+"two_qubit": 23
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "grid",
+"n_qubits": 5,
+"two_qubit": 105
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "grid",
+"n_qubits": 6,
+"two_qubit": 311
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "grid",
+"n_qubits": 7,
+"two_qubit": 557
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "grid",
+"n_qubits": 8,
+"two_qubit": 1218
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "grid",
+"n_qubits": 9,
+"two_qubit": 2256
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "grid",
+"n_qubits": 10,
+"two_qubit": 5356
+},
+{
+"compiler": "qiskit",
+"function": "or",
+"topology": "grid",
+"n_qubits": 11,
+"two_qubit": 9615
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "grid",
+"n_qubits": 3,
+"two_qubit": 33
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "grid",
+"n_qubits": 4,
+"two_qubit": 158
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "grid",
+"n_qubits": 5,
+"two_qubit": 897
+},
+{
+"compiler": "tket",
+"function": "or",
+"topology": "grid",
+"n_qubits": 6,
+"two_qubit": 4175
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "grid",
+"n_qubits": 3,
+"two_qubit": 17,
+"xy": 8
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "grid",
+"n_qubits": 4,
+"two_qubit": 149,
+"xy": 90
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "grid",
+"n_qubits": 5,
+"two_qubit": 445,
+"xy": 264
+},
+{
+"compiler": "pyquil",
+"function": "or",
+"topology": "grid",
+"n_qubits": 6,
+"two_qubit": 2282,
+"xy": 1554
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 3,
+"two_qubit": 2
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 4,
+"two_qubit": 3
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 5,
+"two_qubit": 4
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 6,
+"two_qubit": 5
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 7,
+"two_qubit": 6
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 8,
+"two_qubit": 7
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 9,
+"two_qubit": 8
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 10,
+"two_qubit": 9
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 11,
+"two_qubit": 10
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 12,
+"two_qubit": 11
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 13,
+"two_qubit": 12
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 14,
+"two_qubit": 13
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 15,
+"two_qubit": 14
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 16,
+"two_qubit": 15
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 3,
+"two_qubit": 12
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 4,
+"two_qubit": 56
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 5,
+"two_qubit": 288
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 6,
+"two_qubit": 1280
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 7,
+"two_qubit": 3840
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 8,
+"two_qubit": 10752
+},
+{
+"compiler": "pyquil",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 3,
+"two_qubit": 13,
+"xy": 0
+},
+{
+"compiler": "pyquil",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 4,
+"two_qubit": 70,
+"xy": 10
+},
+{
+"compiler": "pyquil",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 5,
+"two_qubit": 352,
+"xy": 120
+},
+{
+"compiler": "pyquil",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 6,
+"two_qubit": 1608,
+"xy": 732
+},
+{
+"compiler": "pyquil",
+"function": "xor",
+"topology": "fully",
+"n_qubits": 7,
+"two_qubit": 7167,
+"xy": 3082
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "line",
+"n_qubits": 3,
+"two_qubit": 2
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "line",
+"n_qubits": 4,
+"two_qubit": 6
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "line",
+"n_qubits": 5,
+"two_qubit": 10
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "line",
+"n_qubits": 6,
+"two_qubit": 12
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "line",
+"n_qubits": 7,
+"two_qubit": 22
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "line",
+"n_qubits": 8,
+"two_qubit": 23
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "line",
+"n_qubits": 9,
+"two_qubit": 18
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "line",
+"n_qubits": 10,
+"two_qubit": 52
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "line",
+"n_qubits": 11,
+"two_qubit": 20
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "line",
+"n_qubits": 3,
+"two_qubit": 21
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "line",
+"n_qubits": 4,
+"two_qubit": 113
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "line",
+"n_qubits": 5,
+"two_qubit": 657
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "line",
+"n_qubits": 6,
+"two_qubit": 3005
+},
+{
+"compiler": "pyquil",
+"function": "xor",
+"topology": "line",
+"n_qubits": 3,
+"two_qubit": 13,
+"xy": 4
+},
+{
+"compiler": "pyquil",
+"function": "xor",
+"topology": "line",
+"n_qubits": 4,
+"two_qubit": 206,
+"xy": 119
+},
+{
+"compiler": "pyquil",
+"function": "xor",
+"topology": "line",
+"n_qubits": 5,
+"two_qubit": 1483,
+"xy": 1262
+},
+{
+"compiler": "pyquil",
+"function": "xor",
+"topology": "line",
+"n_qubits": 6,
+"two_qubit": 11147,
+"xy": 10366
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "ring",
+"n_qubits": 3,
+"two_qubit": 2
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "ring",
+"n_qubits": 4,
+"two_qubit": 6
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "ring",
+"n_qubits": 5,
+"two_qubit": 10
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "ring",
+"n_qubits": 6,
+"two_qubit": 14
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "ring",
+"n_qubits": 7,
+"two_qubit": 16
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "ring",
+"n_qubits": 8,
+"two_qubit": 14
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "ring",
+"n_qubits": 9,
+"two_qubit": 23
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "ring",
+"n_qubits": 10,
+"two_qubit": 16
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "ring",
+"n_qubits": 11,
+"two_qubit": 18
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "ring",
+"n_qubits": 3,
+"two_qubit": 12
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "ring",
+"n_qubits": 4,
+"two_qubit": 104
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "ring",
+"n_qubits": 5,
+"two_qubit": 561
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "ring",
+"n_qubits": 6,
+"two_qubit": 2807
+},
+{
+"compiler": "pyquil",
+"function": "xor",
+"topology": "ring",
+"n_qubits": 3,
+"two_qubit": 13,
+"xy": 0
+},
+{
+"compiler": "pyquil",
+"function": "xor",
+"topology": "ring",
+"n_qubits": 4,
+"two_qubit": 139,
+"xy": 56
+},
+{
+"compiler": "pyquil",
+"function": "xor",
+"topology": "ring",
+"n_qubits": 5,
+"two_qubit": 968,
+"xy": 707
+},
+{
+"compiler": "pyquil",
+"function": "xor",
+"topology": "ring",
+"n_qubits": 6,
+"two_qubit": 5237,
+"xy": 4386
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "grid",
+"n_qubits": 3,
+"two_qubit": 2
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "grid",
+"n_qubits": 4,
+"two_qubit": 3
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "grid",
+"n_qubits": 5,
+"two_qubit": 4
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "grid",
+"n_qubits": 6,
+"two_qubit": 8
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "grid",
+"n_qubits": 7,
+"two_qubit": 12
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "grid",
+"n_qubits": 8,
+"two_qubit": 11
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "grid",
+"n_qubits": 9,
+"two_qubit": 12
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "grid",
+"n_qubits": 10,
+"two_qubit": 18
+},
+{
+"compiler": "qiskit",
+"function": "xor",
+"topology": "grid",
+"n_qubits": 11,
+"two_qubit": 20
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "grid",
+"n_qubits": 3,
+"two_qubit": 21
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "grid",
+"n_qubits": 4,
+"two_qubit": 89
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "grid",
+"n_qubits": 5,
+"two_qubit": 477
+},
+{
+"compiler": "tket",
+"function": "xor",
+"topology": "grid",
+"n_qubits": 6,
+"two_qubit": 2165
+},
+{
+"compiler": "pyquil",
+"function": "xor",
+"topology": "grid",
+"n_qubits": 3,
+"two_qubit": 17,
+"xy": 8
+},
+{
+"compiler": "pyquil",
+"function": "xor",
+"topology": "grid",
+"n_qubits": 4,
+"two_qubit": 210,
+"xy": 126
+},
+{
+"compiler": "pyquil",
+"function": "xor",
+"topology": "grid",
+"n_qubits": 5,
+"two_qubit": 662,
+"xy": 412
+},
+{
+"compiler": "pyquil",
+"function": "xor",
+"topology": "grid",
+"n_qubits": 6,
+"two_qubit": 3300,
+"xy": 2116
+}
+]
