@@ -1,0 +1,4 @@
+# Qrisp 0.9.10 requires qiskit<2.6, so it runs in its own environment (venvs/qrisp)
+qrisp==0.9.10
+qiskit==2.5.2
+numpy==2.4.6
