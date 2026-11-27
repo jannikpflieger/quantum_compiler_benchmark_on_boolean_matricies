@@ -1,0 +1,16 @@
+{
+ "run_id": "2026-11-26-initial",
+ "label": "First rerun (2026-11-26, 300 s limit, 10 qubits max)",
+ "mode": "pinned",
+ "versions": {
+  "qiskit": "2.6.2",
+  "pytket": "2.18.5",
+  "cirq-core": "1.7.0",
+  "bqskit": "1.2.1",
+  "pennylane": "0.45.1",
+  "qibo": "0.3.7",
+  "numpy": "2.4.6",
+  "qrisp": "0.9.10",
+  "quilc": "1.26.0"
+ }
+}

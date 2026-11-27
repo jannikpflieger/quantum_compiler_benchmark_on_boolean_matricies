@@ -1,0 +1,11 @@
+# Monthly run: newest release of every compiler (the exact versions are recorded with each run)
+qiskit
+pytket
+cirq-core
+bqskit
+pennylane
+qibo
+numpy
+scipy
+networkx
+rustworkx

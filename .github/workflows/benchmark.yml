@@ -1,0 +1,142 @@
+name: Benchmark
+
+# Runs the full benchmark as a matrix of shards (one compiler and layout per job), collects the
+# results into results/runs/<date>/ and rebuilds the site data.
+#  - monthly (1st of the month): newest release of every compiler, results committed to main
+#    and the site redeployed, so the site tracks compiler changes over time
+#  - manual: choose pinned or latest versions
+#  - on a push to a branch other than main whose commit message contains [run-bench]
+on:
+  schedule:
+    - cron: "17 3 1 * *"
+  workflow_dispatch:
+    inputs:
+      versions:
+        description: "pinned (requirements*.txt) or latest (newest releases)"
+        default: latest
+        type: choice
+        options: [latest, pinned]
+      timeout:
+        description: "time limit per compile job in seconds"
+        default: "600"
+  push:
+    branches-ignore: [main]
+
+concurrency:
+  group: benchmark-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[run-bench]')
+    runs-on: ubuntu-latest
+    outputs:
+      shards: ${{ steps.p.outputs.shards }}
+      run_id: ${{ steps.p.outputs.run_id }}
+      versions: ${{ steps.p.outputs.versions }}
+      timeout: ${{ steps.p.outputs.timeout }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - id: p
+        run: |
+          pip install -q numpy
+          echo "shards=$(python -m bench.run --list)" >> "$GITHUB_OUTPUT"
+          echo "run_id=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "schedule" ]; then v=latest
+          elif [ "${{ github.event_name }}" = "push" ]; then v=pinned
+          else v="${{ inputs.versions }}"; fi
+          echo "versions=$v" >> "$GITHUB_OUTPUT"
+          echo "timeout=${{ inputs.timeout || '600' }}" >> "$GITHUB_OUTPUT"
+
+  bench:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 345
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        shard: ${{ fromJson(needs.plan.outputs.shards) }}
+    env:
+      SHARD: ${{ matrix.shard }}
+      MODE: ${{ needs.plan.outputs.versions }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install
+        run: |
+          if [ "$MODE" = latest ]; then R=requirements-latest/main.txt; RQ=requirements-latest/qrisp.txt; RM=requirements-latest/mqt.txt
+          else R=requirements.txt; RQ=requirements-qrisp.txt; RM=requirements-mqt.txt; fi
+          pip install -q -r "$R"
+          case "$SHARD" in
+            */qrisp*) python -m venv venvs/qrisp && venvs/qrisp/bin/pip install -q -r "$RQ" ;;
+            */mqt*) python -m venv venvs/mqt && venvs/mqt/bin/pip install -q -r "$RM" ;;
+            */quilc/*)
+              if [ "$MODE" = latest ]; then img=rigetti/quilc:latest; else img=rigetti/quilc:1.26.0; fi
+              docker pull -q "$img" && echo "QUILC_IMAGE=$img" >> "$GITHUB_ENV" ;;
+          esac
+      - name: Run shard
+        run: |
+          safe=$(echo "$SHARD" | tr '/:' '__')
+          echo "SAFE=$safe" >> "$GITHUB_ENV"
+          mkdir -p out
+          python -m bench.run --shard "$SHARD" --timeout ${{ needs.plan.outputs.timeout }} --workers 4 --out "out/$safe.jsonl"
+          case "$SHARD" in
+            */qrisp*) py=venvs/qrisp/bin/python ;;
+            */mqt*) py=venvs/mqt/bin/python ;;
+            *) py=python ;;
+          esac
+          extra=""; case "$SHARD" in */quilc/*) extra=--quilc ;; esac
+          $py -m bench.versions $extra > "out/$safe.versions.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shard-${{ env.SAFE }}
+          path: out/
+          retention-days: 30
+
+  collect:
+    needs: [plan, bench]
+    if: always() && needs.plan.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: shard-*
+          path: shards
+      - name: Collect and export
+        run: |
+          pip install -q numpy
+          python -m bench.collect shards "${{ needs.plan.outputs.run_id }}" "${{ needs.plan.outputs.versions }}"
+          python -m bench.export
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/runs docs/data
+          git commit -m "Benchmark run ${{ needs.plan.outputs.run_id }} (${{ needs.plan.outputs.versions }} versions)" || exit 0
+          for i in 1 2 3; do git pull --rebase -q && git push && break; sleep 5; done
+
+  pages:
+    needs: collect
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages.yml
+    with:
+      ref: main
