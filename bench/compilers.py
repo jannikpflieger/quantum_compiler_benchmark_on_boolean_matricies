@@ -355,7 +355,8 @@ def quilc(func, n_in, topology, timeout=None, **opts):
         name = "quilc-" + uuid.uuid4().hex[:8]
         t0 = time.perf_counter()
         try:
-            r = subprocess.run(["docker", "run", "--rm", "-i", "--name", name, "-v", f"{d}:/isa", QUILC_IMAGE,
+            r = subprocess.run(["docker", "run", "--rm", "-i", "--name", name,
+                                "--memory", f"{os.environ.get('BENCH_MEM_MB', '3500')}m", "-v", f"{d}:/isa", QUILC_IMAGE,
                                 "--isa", "/isa/isa.json", "--quiet"],
                                input=prog, capture_output=True, text=True, timeout=timeout)
         except subprocess.TimeoutExpired:
@@ -363,7 +364,9 @@ def quilc(func, n_in, topology, timeout=None, **opts):
             raise
         dt = time.perf_counter() - t0
     if r.returncode != 0:
-        raise RuntimeError(r.stderr[-2000:])
+        raise RuntimeError(f"quilc exit code {r.returncode}"
+                           + (" (killed, out of memory)" if r.returncode == 137 else "")
+                           + (": " + r.stderr[-2000:] if r.stderr.strip() else ""))
     return parse_quil(r.stdout, n, n_phys, dt)
 
 
@@ -520,14 +523,14 @@ def _qrisp(func, n_in, topology, method):
     # basis translation only, so the counts reflect Qrisp's synthesis. qubits_initially_zero=False:
     # an oracle must work for every input, so idle qubits must not be used as clean ancillas.
     kw = dict(basis_gates=["rx", "ry", "rz", "p", "cx"], optimization_level=0, qubits_initially_zero=False)
-    if topology != "fully":
+    if topology != "fully" and qc.size() > 0:  # an empty circuit (always 0) needs no routing
         n_phys, e = edges(topology, qc.num_qubits)
         kw.update(coupling_map=CouplingMap([list(a) for a in e] + [[b, a] for a, b in e]),
                   layout_method="sabre", routing_method="sabre", seed_transpiler=7)
     out = transpile(qc, **kw)
     dt = time.perf_counter() - t0
     gates, counts = _from_qiskit(out)
-    if out.layout is not None and topology != "fully":
+    if out.layout is not None and topology != "fully" and qc.size() > 0:
         initial = out.layout.initial_index_layout()[:n]
         final = out.layout.final_index_layout()[:n]
     else:
@@ -562,7 +565,7 @@ def mqt(func, n_in, topology, **opts):
     import mqt.syrec as S
     from mqt.core.plugins.qiskit import mqt_to_qiskit
     from mqt.core import load
-    from mqt.qmap.sc import Architecture, Configuration, map_
+    from mqt.qmap.sc import Architecture, Configuration, InitialLayout, map_
     from qiskit import QuantumCircuit, transpile
 
     n, m = _sizes(func, n_in)
@@ -599,6 +602,13 @@ def mqt(func, n_in, topology, **opts):
         for op, qs in reversed(keep):
             c.append(op.inverse(), qs)
     elem = transpile(c, basis_gates=["u", "cx"], optimization_level=0, qubits_initially_zero=False)
+    # QMAP drops idle qubits and reports its layouts in the renumbered indices, so idle qubits are
+    # removed here: idle helper lines are dropped, idle inputs/outputs are placed on free qubits.
+    active = sorted({elem.find_bit(q).index for inst in elem.data for q in inst.qubits})
+    pos_a = {q: i for i, q in enumerate(active)}
+    act = QuantumCircuit(max(1, len(active)))
+    for inst in elem.data:
+        act.append(inst.operation, [pos_a[elem.find_bit(q).index] for q in inst.qubits])
     n_phys, e = edges(topology, c.num_qubits)
     if topology == "fully":
         e = [(a, b) for a in range(n_phys) for b in range(a + 1, n_phys)]
@@ -607,17 +617,31 @@ def mqt(func, n_in, topology, **opts):
     cfg.add_measurements_to_mapped_circuit = False
     cfg.pre_mapping_optimizations = True
     cfg.post_mapping_optimizations = True
-    qm, _ = map_(load(elem), arch, cfg)
+    # QMAP's default dynamic initial layout (qubits placed at their first gate) reports a wrong
+    # initial_layout in QMAP 3.11 (checked with MQT QCEC), so the static initial layout is used.
+    cfg.initial_layout = InitialLayout.static
+    qm, _ = map_(load(act), arch, cfg)
     out = mqt_to_qiskit(qm)
     dt = time.perf_counter() - t0
     gates, counts = _from_qiskit(out)
     # layouts as physical -> logical maps from QMAP (the Qiskit layout ignores the output permutation)
     inv_in = {lq: p for p, lq in qm.initial_layout.items()}
     inv_out = {lq: p for p, lq in qm.output_permutation.items()}
-    initial = [inv_in[l] for l in range(n)]
-    final = [inv_out[l] for l in range(n)]
-    return dict(gates=gates, n_phys=out.num_qubits, initial=initial, final=final, counts=counts,
-                two_qubit=_two(counts), compile_time=dt, helpers=helpers)
+    busy = {g[1] for g in gates} | {g[2] for g in gates if g[0] != "1q"}
+    busy |= {inv_in[pos_a[l]] for l in range(n) if l in pos_a} | {inv_out[pos_a[l]] for l in range(n) if l in pos_a}
+    free = iter(p for p in range(n_phys) if p not in busy)
+    initial, final = [], []
+    for l in range(n):
+        if l in pos_a:
+            initial.append(inv_in[pos_a[l]])
+            final.append(inv_out[pos_a[l]])
+        else:  # idle logical qubit (e.g. an input the function does not depend on)
+            p = next(free)
+            initial.append(p)
+            final.append(p)
+    helpers = len([q for q in active if q >= n])
+    return dict(gates=gates, n_phys=max(out.num_qubits, n_phys), initial=initial, final=final,
+                counts=counts, two_qubit=_two(counts), compile_time=dt, helpers=helpers)
 
 
 COMPILERS = {

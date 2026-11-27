@@ -19,8 +19,10 @@ import json
 import os
 import subprocess
 import sys
+import signal
 import time
 from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FutureTimeout
 
 from .oracles import FUNCTIONS
 from .topologies import TOPOLOGIES
@@ -86,6 +88,27 @@ def shards():
     return out
 
 
+# Memory limit per compile job (resident memory of the job and its child processes). GitHub's
+# runners have 16 GB for 4 parallel jobs; without a limit one job can take the whole runner down.
+MEM_LIMIT_MB = int(os.environ.get("BENCH_MEM_MB", "3500"))
+
+
+def _group_rss_mb(pgid):
+    """Resident memory of all processes in a process group, in MB (Linux /proc)."""
+    total = 0
+    for d in os.listdir("/proc"):
+        if not d.isdigit():
+            continue
+        try:
+            with open(f"/proc/{d}/stat") as f:
+                fields = f.read().rsplit(")", 1)[1].split()
+            if int(fields[2]) == pgid:  # field 5 (pgrp) of /proc/<pid>/stat
+                total += int(fields[21]) * os.sysconf("SC_PAGE_SIZE")  # field 24 (rss, pages)
+        except (OSError, IndexError, ValueError):
+            continue
+    return total / 2 ** 20
+
+
 def run_job(comp, func, n_in, topo, timeout):
     py = python_for(comp)
     env = dict(os.environ, PYTHONWARNINGS="ignore")
@@ -94,20 +117,43 @@ def run_job(comp, func, n_in, topo, timeout):
     from .oracles import n_outputs
     m = n_outputs(func, n_in)
     base = dict(compiler=comp, function=func, n_inputs=n_in, n_outputs=m, n_qubits=n_in + m, topology=topo)
-    try:
-        r = subprocess.run([py, "-m", "bench.job", comp, func, str(n_in), topo], cwd=HERE,
-                           capture_output=True, text=True, timeout=timeout, env=env)
-    except subprocess.TimeoutExpired:
+    p = subprocess.Popen([py, "-m", "bench.job", comp, func, str(n_in), topo], cwd=HERE,
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env,
+                         start_new_session=True)
+    reader = ThreadPoolExecutor(1)
+    fut = reader.submit(p.communicate)
+    status = None
+    while True:
+        try:
+            stdout, stderr = fut.result(timeout=1.0)
+            break
+        except FutureTimeout:
+            pass
+        if time.time() - t0 > timeout:
+            status = "timeout"
+        elif _group_rss_mb(p.pid) > MEM_LIMIT_MB:
+            status = "memory"
+        if status:
+            try:
+                os.killpg(p.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            fut.result()
+            break
+    reader.shutdown()
+    if status:
         if comp.startswith("quilc"):
             subprocess.run("docker ps -q --filter name=quilc- | xargs -r docker kill", shell=True,
                            capture_output=True)
-        return dict(base, status="timeout", timeout=timeout)
-    for line in reversed(r.stdout.splitlines()):
+        if status == "timeout":
+            return dict(base, status="timeout", timeout=timeout)
+        return dict(base, status="memory", mem_limit_mb=MEM_LIMIT_MB)
+    for line in reversed(stdout.splitlines()):
         if line.startswith("RESULT "):
             rec = json.loads(line[7:])
             rec["wall_time"] = round(time.time() - t0, 2)
             return rec
-    return dict(base, status="crash", error=(r.stderr or r.stdout)[-800:])
+    return dict(base, status="crash", error=(stderr or stdout)[-800:])
 
 
 def main():
@@ -150,7 +196,7 @@ def main():
                 break
             key = (comp, func, n_in, topo)
             if key in done:
-                if done[key] in ("timeout", "crash"):
+                if done[key] in ("timeout", "crash", "memory"):
                     break
                 continue
             rec = run_job(comp, func, n_in, topo, timeout)
@@ -159,7 +205,7 @@ def main():
             out.flush()
             print(f"{comp:22s} {func:12s} {topo:9s} n={n_in:2d} {rec['status']:8s} "
                   f"2q={rec.get('two_qubit')} ver={rec.get('verified')}", flush=True)
-            if rec["status"] in ("timeout", "crash"):
+            if rec["status"] in ("timeout", "crash", "memory"):
                 break
 
     todo = list(series(study, comps or None, topos or None))

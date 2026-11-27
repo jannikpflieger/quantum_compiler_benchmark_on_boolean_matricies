@@ -310,6 +310,7 @@ function renderCharts() {
 function cellText(r, metric, fmt) {
   if (!r) return ["", ""];
   if (r.s === "timeout") return ["⏱", ""];
+  if (r.s === "memory") return ["M", ""];
   if (r.s !== "ok") return ["!", ""];
   if (r.v === "failed") return [`${fmt(r[metric])} ✗`, "bad"];
   if (r.v === "skipped") return [`${fmt(r[metric])}*`, ""];
@@ -337,7 +338,7 @@ function renderMainTable() {
   }
   wrap.innerHTML = "";
   wrap.appendChild(t);
-  wrap.appendChild(h("p", { class: "note", style: "padding:0 10px" }, "⏱ timeout, ! error, ✗ wrong result, * not simulated (too large)."));
+  wrap.appendChild(h("p", { class: "note", style: "padding:0 10px" }, "⏱ timeout, M memory limit, ! error, ✗ wrong result, * not simulated (too large)."));
 }
 
 // ---------------------------------------------------------------- coverage
@@ -349,7 +350,7 @@ function coverage(c, f, t) {
   for (const r of rows) {
     if (verified(r)) { best = r.q; n++; continue; }
     if (r.s === "ok" && r.v === "skipped") { n++; best = best; why = why || `${r.q}*`; continue; }
-    why = why || (r.s === "timeout" ? `⏱ ${r.q}` : r.s !== "ok" ? `! ${r.q}` : `✗ ${r.q}`);
+    why = why || (r.s === "timeout" ? `⏱ ${r.q}` : r.s === "memory" ? `M ${r.q}` : r.s !== "ok" ? `! ${r.q}` : `✗ ${r.q}`);
   }
   const total = b - a + 1;
   return { best, why, frac: n / total };
@@ -433,6 +434,7 @@ function renderHardware() {
       const td = h("td");
       if (!r) td.textContent = "";
       else if (r.s === "timeout") td.textContent = "timeout";
+      else if (r.s === "memory") td.textContent = "memory limit";
       else if (r.s !== "ok") td.textContent = "error";
       else if (r.v === "failed") { td.textContent = "wrong result"; td.className = "bad"; }
       else {

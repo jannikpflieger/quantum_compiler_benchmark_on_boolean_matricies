@@ -26,6 +26,14 @@ def _chain(op, items):
     return reduce(lambda a, b: (op, a, b), items)
 
 
+def _balanced(op, items):
+    """Balanced tree, so that long sums of products do not exceed parser nesting limits."""
+    if len(items) == 1:
+        return items[0]
+    h = len(items) // 2
+    return (op, _balanced(op, items[:h]), _balanced(op, items[h:]))
+
+
 def _sop(minterms, n):
     """Sum of products over the given input indices (little-endian bits)."""
     if not minterms:
@@ -34,7 +42,7 @@ def _sop(minterms, n):
     for m in minterms:
         lits = [V(i) if (m >> i) & 1 else ("not", V(i)) for i in range(n)]
         terms.append(_chain("and", lits))
-    return _chain("or", terms)
+    return _balanced("or", terms)
 
 
 def evaluate(e, bits):
@@ -109,7 +117,7 @@ def _less_than(n):
 def _majority(n):
     need = n // 2 + 1
     terms = [_chain("and", [V(i) for i in c]) for c in combinations(range(n), need)]
-    return _chain("or", terms)
+    return _balanced("or", terms)
 
 
 # name -> spec
