@@ -1,7 +1,7 @@
 {
  "run_id": "2026-11-27",
  "mode": "pinned",
- "jobs": 3703,
+ "jobs": 4490,
  "versions": {
   "qiskit": "2.6.2",
   "pytket": "2.18.5",
