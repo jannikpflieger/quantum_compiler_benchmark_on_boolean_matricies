@@ -41,7 +41,14 @@
   <h2>Summary</h2>
   <div class="card findings-card">
     <ul class="findings" id="findings">
-      <li>Findings are filled in from the latest run.</li>
+      <li>The numbers in this text are from the run of 27 November 2026 (4,490 compile jobs, pinned versions). The charts and tables always show the newest run.</li>
+      <li><b>Compilers that see the Boolean function beat generic matrix synthesis by one to two orders of magnitude.</b> For AND on 6 qubits the best function-based result is 49 two-qubit gates (MQT), against 902 to 1,824 for Qiskit's matrix input, Qibo, quilc, Cirq and PennyLane. Matrix synthesis grows like 4<sup>n</sup>, so it reaches only 6 to 10 qubits within the 600 s limit.</li>
+      <li><b>No compiler is best for every function.</b> Qrisp's Gray synthesis gives the fewest gates for majority, comparator and random truth tables (for example 126 two-qubit gates for a random function on 7 qubits, against 446 for tket and 680 for Qrisp PPRM). MQT is best for AND and XOR, Qrisp PPRM for the adder. Qrisp's Gray synthesis is wrong for XOR and the adder with 4 or more qubits (96 wrong results), so its low counts only count where it is verified.</li>
+      <li><b>Real device layouts cost a factor of about 1.5 to 3 in two-qubit gates</b> compared with full connectivity (median over all verified cases). On IBM heavy-hex the factor is 1.5 to 1.9 for most compilers and 2.5 to 3.1 for Qrisp (routed by Qiskit's Sabre pass) and MQT.</li>
+      <li><b>Estimated success probability follows the gate count.</b> For a random function on 6 qubits on IBM heavy-hex it is 0.68 with Qrisp Gray, 0.32 with tket and 0.03 with Qiskit's expression input; most matrix-synthesis circuits are close to 0.</li>
+      <li><b>Helper qubits pay off strongly.</b> A 13-control AND (14 qubits) needs 1,084 two-qubit gates in Qiskit without helpers and 72 with one clean helper qubit; with one helper that may be in any state (dirty) it needs 138.</li>
+      <li><b>Compared with the thesis (2022)</b>, Qiskit's AND and OR circuits got much smaller (AND on 10 qubits: 1,532 → 288 two-qubit gates), but XOR got much larger (6 qubits: 5 → 1,280), because the current Boolean oracle no longer recognises XOR terms.</li>
+      <li>Two compiler problems were found: the Qrisp Gray synthesis bug above, and in MQT QMAP 3.11 the default dynamic initial layout reports a wrong <code>initial_layout</code> (MQT's own checker QCEC confirms the mismatch). MQT is therefore run with the static initial layout. quilc returned 10 wrong circuits on grid, ring and Sycamore layouts; the one small case among them was correct when run again locally, so the cause is probably numerical.</li>
     </ul>
   </div>
 </section>
@@ -223,11 +230,34 @@
 
 <section id="discussion">
   <h2>Discussion</h2>
-  <div id="discussion-body"></div>
+  <div id="discussion-body">
+    <p>The main result of the thesis still holds: a compiler that knows it is compiling a Boolean function produces far smaller circuits than one that only sees the matrix. The gap grows with the number of qubits, since generic unitary synthesis needs on the order of 4<sup>n</sup> two-qubit gates, while the best Boolean synthesis for AND, OR, the comparator and the adder grows roughly linearly or quadratically.</p>
+    <p>Among the Boolean methods the choice of synthesis matters more than the choice of compiler. Functions with a short expression (AND, XOR, the adder) are compiled well by expression-based tools (MQT, Qiskit, Qrisp PPRM). Functions given only as a truth table, or with many product terms (majority, random functions), favour Qrisp's Gray synthesis, which uses phase rotations instead of Toffoli gates. That has a cost the two-qubit count does not show: its circuits need arbitrary-angle rotations, which are expensive on a fault-tolerant computer, while MQT and Qiskit produce Clifford+T circuits (see the T-count and rotation metrics).</p>
+    <p>MQT uses extra helper lines from its SyReC synthesis, so its circuits use more qubits than the others (for example 11 helpers for a random 3-input function). On restricted layouts these helpers have to be routed too, which is why MQT's layout overhead is larger than that of most other compilers.</p>
+    <p>Optimisation levels matter mainly on restricted layouts. On the fully connected layout Qiskit's levels 0 to 3 differ by at most 2 %; on heavy-hex level 0 needs a median of 1.9 times (up to 2.8 times) the two-qubit gates of level 3. For tket the highest level changes nothing for AND and OR, but saves up to 88 % for XOR, majority and the adder.</p>
+    <p>The estimated success probability is a simple model (independent gate errors, no idle or readout errors), but it shows the practical consequence: on today's devices only circuits with at most a few hundred two-qubit gates have a reasonable chance of giving the right answer, which rules out generic synthesis beyond about 5 qubits.</p>
+  </div>
   <h3>What could be improved</h3>
-  <ul id="improve"></ul>
+  <ul id="improve">
+    <li><b>More synthesis methods for the same function.</b> ESOP-based synthesis (as in the old tweedledum library or Caterpillar), LUT-based hierarchical synthesis, or exact synthesis for small functions would show how far the current compilers are from the best known circuits.</li>
+    <li><b>Phase oracles.</b> Many algorithms (Grover, Deutsch-Jozsa) only need the phase version (−1)<sup>f(x)</sup>, which saves the output qubit and often half of the gates.</li>
+    <li><b>Larger functions from real use</b>, for example the arithmetic and control benchmarks of the EPFL suite or RevLib, instead of only synthetic functions.</li>
+    <li><b>Noise-aware compilation and real calibration data.</b> The success estimate uses one representative error rate per platform. Daily calibration data, or a short run on real hardware, would show whether the ranking holds.</li>
+    <li><b>Fault-tolerant cost.</b> Counting T gates after synthesising the arbitrary rotations (for example with gridsynth) would compare the Gray and Toffoli-based approaches fairly.</li>
+    <li><b>Statistics.</b> Compilers with random choices (Sabre, quilc, BQSKit) should be run with several seeds and reported with a spread.</li>
+  </ul>
   <h3>Limitations</h3>
-  <ul id="limits"></ul>
+  <ul id="limits">
+    <li>The matrix input is limited to 12 qubits (a 4,096 × 4,096 matrix); in practice matrix synthesis stops at 6 to 10 qubits because of the 600 s time limit (1,200 s for BQSKit, which reaches only 4 to 5 qubits).</li>
+    <li>Each job has a memory limit of 3.5 GB (status "memory limit"); this ends, for example, Qiskit's XOR series at 15 qubits and quilc's larger cases. Peak memory includes importing the libraries (about 100 to 300 MB).</li>
+    <li>Circuits with more than 24 used qubits are not simulated (marked "not simulated"); circuits with more than about 16 qubits are checked on a random sample of inputs.</li>
+    <li>Helper qubits are checked only for the input |0⟩. Helpers declared as "dirty" are not tested with other starting states.</li>
+    <li>MQT synthesises from the Boolean expression with SyReC; its line-aware synthesis needs more helper lines than heavy-hex (57) or Sycamore (54) have for majority and random functions with 5 or more inputs.</li>
+    <li>quilc runs out of memory or heap at 7 to 9 qubits in many cases.</li>
+    <li>IonQ is modelled only by its error rates on the fully connected layout; its native gates (MS, GPi) are not used.</li>
+    <li>staq is not included, because its Python package (pystaq) has no installable release for current Python versions; building it from source was not part of this setup.</li>
+    <li>The Qrisp results on restricted layouts depend on Qiskit's Sabre routing, since Qrisp has no routing of its own.</li>
+  </ul>
 </section>
 
 <section id="reproduce">
