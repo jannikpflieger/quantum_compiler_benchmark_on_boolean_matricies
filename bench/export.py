@@ -49,6 +49,9 @@ def load_run(d):
 
 
 def compact(r):
+    from .oracles import n_outputs
+    if "n_qubits" not in r:
+        r = dict(r, n_qubits=r["n_inputs"] + n_outputs(r["function"], r["n_inputs"]))
     out = {KEYS[k]: v for k, v in r.items() if k in KEYS}
     if out.get("s") == "error":
         out["err"] = (r.get("error") or "")[:160]

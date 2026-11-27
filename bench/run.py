@@ -91,7 +91,9 @@ def run_job(comp, func, n_in, topo, timeout):
     env = dict(os.environ, PYTHONWARNINGS="ignore")
     env.setdefault("BQSKIT_WORKERS", "2")
     t0 = time.time()
-    base = dict(compiler=comp, function=func, n_inputs=n_in, topology=topo)
+    from .oracles import n_outputs
+    m = n_outputs(func, n_in)
+    base = dict(compiler=comp, function=func, n_inputs=n_in, n_outputs=m, n_qubits=n_in + m, topology=topo)
     try:
         r = subprocess.run([py, "-m", "bench.job", comp, func, str(n_in), topo], cwd=HERE,
                            capture_output=True, text=True, timeout=timeout, env=env)
