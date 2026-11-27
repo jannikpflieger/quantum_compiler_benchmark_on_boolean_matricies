@@ -1,0 +1,6 @@
+# MQT runs in its own environment (venvs/mqt) to keep its pinned mqt-core apart from the rest
+mqt-core==3.11.0
+mqt-qmap==3.11.0
+mqt-syrec==2.1.0
+qiskit==2.6.2
+numpy==2.5.5

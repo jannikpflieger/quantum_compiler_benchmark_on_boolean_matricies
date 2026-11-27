@@ -4,243 +4,278 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Boolean Oracle Compilation</title>
-<meta name="description" content="A re-run, with current software, of a 2022 bachelor thesis that compared how quantum compilers decompose reversible Boolean functions.">
+<meta name="description" content="How many gates do quantum compilers need for reversible Boolean functions? A benchmark of eleven compilers on six qubit layouts, re-run monthly.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="top">
-  <button class="themebtn" id="theme" type="button">Light / dark</button>
-  <h1>How well do quantum compilers handle Boolean functions?</h1>
-  <p class="sub">A re-run of a bachelor thesis from 2022/23 with current compiler versions and more compilers. Jannik Pflieger.</p>
-  <nav class="toc">
-    <a href="#summary">Summary</a><a href="#background">Background</a><a href="#method">Method</a>
-    <a href="#results">Results</a><a href="#then-now">2022 vs. now</a><a href="#discussion">Discussion</a>
-    <a href="#reproduce">Reproduce</a>
-  </nav>
+<header class="bar">
+  <div class="bar-in">
+    <a class="brand" href="#top">Boolean oracle compilation</a>
+    <nav class="toc" aria-label="Sections">
+      <a href="#summary">Summary</a><a href="#method">Method</a><a href="#results">Results</a>
+      <a href="#coverage">Coverage</a><a href="#hardware">Hardware</a><a href="#studies">Studies</a>
+      <a href="#time">Over time</a><a href="#discussion">Discussion</a>
+    </nav>
+    <button class="themebtn" id="theme" type="button" aria-label="Switch light or dark theme">◐</button>
+  </div>
 </header>
+
+<div class="hero" id="top">
+  <div class="hero-in">
+    <p class="eyebrow">Benchmark · bachelor thesis 2022/23, re-run and extended in 2026</p>
+    <h1>How well do quantum compilers handle Boolean functions?</h1>
+    <p class="lead">Many quantum algorithms use a classical Boolean function as a reversible <em>oracle</em>.
+    This project measures how many gates eleven compilers need to turn such oracles into hardware circuits, on six qubit layouts,
+    and checks every circuit by simulation. The benchmark runs again every month with the newest compiler releases.</p>
+    <p class="byline">Jannik Pflieger · <a href="https://github.com/jannikpflieger/quantum_compiler_benchmark_on_boolean_matricies">Code and data on GitHub</a></p>
+    <div class="tiles" id="tiles"></div>
+  </div>
+</div>
+
 <main>
 
 <section id="summary">
   <h2>Summary</h2>
-  <p>Many quantum algorithms take a classical Boolean function as input, in the form of an <em>oracle</em>.
-  Before an oracle can run on hardware, a compiler has to rewrite it as a sequence of one- and two-qubit
-  gates that respects which qubits are physically connected. This project measures how many gates
-  different compilers need for this, for a small set of Boolean functions and four qubit layouts.</p>
-  <p>The original study (bachelor thesis, Goethe University Frankfurt, 2023) compared Qiskit, tket and pyQuil, and had to leave out Cirq and BQSKit.
-  Here the same experiment is run again with the current versions of those tools, and PennyLane, Qibo and Qrisp are added.
-  Every compiled circuit is simulated to check that it really implements the function.</p>
-  <div class="card" id="findings-card">
-    <h3 style="margin-top:0">Main observations</h3>
+  <div class="card findings-card">
     <ul class="findings" id="findings">
-      <li><b>Using the structure of the function matters more than the choice of tool.</b> Where a tool recognises the
-      Boolean structure (Qiskit's expression interface for AND, quilc for XOR, Qrisp's logic synthesis), a 10-qubit oracle needs
-      tens to a few hundred two-qubit gates. Treated as a general matrix (Qiskit matrix input, Cirq, PennyLane, Qibo), the count grows
-      roughly as 4<sup><i>n</i></sup>: tens of thousands of gates at 8 to 10 qubits, or a timeout.</li>
-      <li><b>No compiler is best for all three functions.</b> Among the compilers, the lowest verified counts at 10 qubits on the fully connected layout are
-      288 two-qubit gates for AND (Qiskit, equal to the textbook construction), 537 for OR (Qiskit) and 9 for XOR (quilc and Qrisp PPRM, optimal).</li>
-      <li><b>Qiskit improved for AND and OR, but not for XOR.</b> AND at 10 qubits went from 1,532 CNOTs (2022) to 288, OR from 3,731 to 537.
-      XOR went from the optimal 9 CNOTs to 73,728, because the current expression synthesis no longer finds the CNOT-only circuit.</li>
-      <li><b>tket shows the opposite trend.</b> In 2022 tket had the best AND (288 CNOTs at 10 qubits); now it needs 1,534.
-      OR improved strongly (6 qubits: 2,480 to 94 CNOTs).</li>
-      <li><b>Cirq and BQSKit, which were excluded in 2022, now work</b>, with limits. Cirq's default path still leaves gates on more than three
-      qubits undecomposed, but an explicit Shannon decomposition works up to 7 or 8 qubits within the time limit. BQSKit finds optimal or near-optimal circuits for
-      3 qubits, but its numerical synthesis does not finish within 300 s from 4 qubits on (5 for XOR).</li>
-      <li><b>The correctness check found real errors.</b> Qrisp's Gray-code synthesis returns a wrong XOR circuit from 4 qubits on.
-      quilc stops with numerical errors for some 7 and 8 qubit cases.</li>
+      <li>The numbers in this text are from the run of 27 November 2026 (4,490 compile jobs, pinned versions). The charts and tables always show the newest run.</li>
+      <li><b>Compilers that see the Boolean function beat generic matrix synthesis by one to two orders of magnitude.</b> For AND on 6 qubits the best function-based result is 49 two-qubit gates (MQT), against 902 to 1,824 for Qiskit's matrix input, Qibo, quilc, Cirq and PennyLane. Matrix synthesis grows like 4<sup>n</sup>, so it reaches only 6 to 10 qubits within the 600 s limit.</li>
+      <li><b>No compiler is best for every function.</b> Qrisp's Gray synthesis gives the fewest gates for majority, comparator and random truth tables (for example 126 two-qubit gates for a random function on 7 qubits, against 446 for tket and 680 for Qrisp PPRM). MQT is best for AND and XOR, Qrisp PPRM for the adder. Qrisp's Gray synthesis is wrong for XOR and the adder with 4 or more qubits (96 wrong results), so its low counts only count where it is verified.</li>
+      <li><b>Real device layouts cost a factor of about 1.5 to 3 in two-qubit gates</b> compared with full connectivity (median over all verified cases). On IBM heavy-hex the factor is 1.5 to 1.9 for most compilers and 2.5 to 3.1 for Qrisp (routed by Qiskit's Sabre pass) and MQT.</li>
+      <li><b>Estimated success probability follows the gate count.</b> For a random function on 6 qubits on IBM heavy-hex it is 0.68 with Qrisp Gray, 0.32 with tket and 0.03 with Qiskit's expression input; most matrix-synthesis circuits are close to 0.</li>
+      <li><b>Helper qubits pay off strongly.</b> A 13-control AND (14 qubits) needs 1,084 two-qubit gates in Qiskit without helpers and 72 with one clean helper qubit; with one helper that may be in any state (dirty) it needs 138.</li>
+      <li><b>Compared with the thesis (2022)</b>, Qiskit's AND and OR circuits got much smaller (AND on 10 qubits: 1,532 → 288 two-qubit gates), but XOR got much larger (6 qubits: 5 → 1,280), because the current Boolean oracle no longer recognises XOR terms.</li>
+      <li>Two compiler problems were found: the Qrisp Gray synthesis bug above, and in MQT QMAP 3.11 the default dynamic initial layout reports a wrong <code>initial_layout</code> (MQT's own checker QCEC confirms the mismatch). MQT is therefore run with the static initial layout. quilc returned 10 wrong circuits on grid, ring and Sycamore layouts; the one small case among them was correct when run again locally, so the cause is probably numerical.</li>
     </ul>
   </div>
 </section>
 
 <section id="background">
   <h2>Background</h2>
-  <h3>Boolean functions as quantum operations</h3>
-  <p>A quantum computer can only apply reversible operations. A Boolean function
-  <i>f</i>: {0,1}<sup><i>n</i></sup> → {0,1} is therefore implemented with one extra output qubit:</p>
-  <p style="text-align:center">|<i>x</i>, <i>y</i>⟩ ↦ |<i>x</i>, <i>y</i> ⊕ <i>f</i>(<i>x</i>)⟩</p>
-  <p>The inputs stay unchanged and the output qubit is flipped whenever <i>f</i>(<i>x</i>) = 1.
-  As a matrix this is a permutation of the computational basis states, so a function with <i>n</i> inputs
-  becomes a 2<sup><i>n</i>+1</sup> × 2<sup><i>n</i>+1</sup> permutation matrix on <i>n</i> + 1 qubits.
-  Such matrices have a lot of structure, so one would expect compilers to decompose them more efficiently
-  than an arbitrary unitary of the same size.</p>
-  <h3>What a compiler has to do</h3>
-  <ol>
-    <li><b>Synthesis:</b> express the operation in a fixed set of native gates (here: single-qubit rotations and CNOT or CZ).</li>
-    <li><b>Mapping and routing:</b> place logical qubits on physical qubits and insert SWAP operations whenever two qubits that
-    must interact are not connected.</li>
-    <li><b>Optimisation:</b> remove or merge redundant gates.</li>
-  </ol>
-  <p>Two-qubit gates are the main source of error on current hardware, so their number is the main metric here.</p>
+  <div class="cols">
+    <div>
+      <h3>Boolean functions as quantum operations</h3>
+      <p>A quantum computer can only apply reversible operations. A Boolean function
+      <i>f</i>: {0,1}<sup><i>n</i></sup> → {0,1}<sup><i>m</i></sup> is therefore implemented with <i>m</i> extra output qubits:</p>
+      <p class="formula">|<i>x</i>, <i>y</i>⟩ ↦ |<i>x</i>, <i>y</i> ⊕ <i>f</i>(<i>x</i>)⟩</p>
+      <p>The inputs stay unchanged and each output qubit is flipped when its output bit is 1. As a matrix this is a permutation
+      of the computational basis states. Such matrices have much more structure than an arbitrary unitary of the same size,
+      so a good compiler should need far fewer gates for them.</p>
+    </div>
+    <div>
+      <h3>What a compiler has to do</h3>
+      <ol>
+        <li><b>Synthesis:</b> express the operation in a fixed set of native gates (single-qubit rotations and CNOT or CZ).</li>
+        <li><b>Mapping and routing:</b> place logical qubits on physical qubits and insert SWAP operations when two qubits that
+        must interact are not connected.</li>
+        <li><b>Optimisation:</b> remove or merge redundant gates.</li>
+      </ol>
+      <p>Two-qubit gates are the main source of error on current hardware, so their number is the main metric.
+      Depth, T-count, compile time, memory and an estimated success probability are reported as well.</p>
+    </div>
+  </div>
 </section>
 
 <section id="method">
   <h2>Method</h2>
   <h3>Boolean functions</h3>
   <div class="table-wrap"><table>
-    <tr><th>Function</th><th>Definition</th><th>Qubits</th></tr>
-    <tr><td>Multiple AND</td><td><i>A</i><sub>0</sub> ∧ <i>A</i><sub>1</sub> ∧ … ∧ <i>A</i><sub><i>n</i>−1</sub></td><td>3 – 10</td></tr>
-    <tr><td>Multiple OR</td><td><i>A</i><sub>0</sub> ∨ <i>A</i><sub>1</sub> ∨ … ∨ <i>A</i><sub><i>n</i>−1</sub></td><td>3 – 10</td></tr>
-    <tr><td>Multiple XOR</td><td><i>A</i><sub>0</sub> ⊕ <i>A</i><sub>1</sub> ⊕ … ⊕ <i>A</i><sub><i>n</i>−1</sub></td><td>3 – 10</td></tr>
-    <tr><td>Always 0</td><td><i>A</i> ∧ ¬<i>A</i></td><td>2</td></tr>
-    <tr><td>Always 1</td><td><i>A</i> ∨ ¬<i>A</i></td><td>2</td></tr>
-    <tr><td>Identity</td><td><i>A</i></td><td>2</td></tr>
-    <tr><td>Two of three</td><td>(<i>A</i> ∧ <i>B</i>) ∨ (<i>B</i> ∧ <i>C</i>) ∨ (<i>A</i> ∧ <i>C</i>)</td><td>4</td></tr>
+    <thead><tr><th>Function</th><th>Definition</th><th class="num">Outputs</th><th class="num">Qubits</th></tr></thead>
+    <tbody id="func-table"></tbody>
   </table></div>
-  <p class="note">For orientation: AND and OR on 3 qubits (the Toffoli gate) need 6 CNOTs. For more inputs, constructions without
-  extra qubits exist whose CNOT count grows polynomially in <i>n</i>. XOR needs exactly one CNOT per input.
-  A generic method for an arbitrary unitary needs on the order of 4<sup><i>n</i></sup> CNOTs.</p>
+  <p class="note">The first seven functions are those of the thesis. Majority generalises two-of-three, the comparator and the adder
+  are common building blocks of arithmetic oracles, and the random truth tables (fixed seed per size) have no structure a compiler could exploit.
+  For orientation: a Toffoli gate needs 6 CNOTs, XOR needs one CNOT per input, and generic unitary synthesis needs on the order of
+  4<sup><i>n</i></sup> CNOTs.</p>
 
   <h3>Qubit layouts</h3>
-  <p>As in the thesis, four connectivity graphs are used. The grid is the smallest square grid with enough qubits
-  (e.g. 3 × 3 for 5 to 9 qubits), so the compiler may also choose which qubits to use.</p>
-  <div class="topo-row" id="topo-row">
-    <figure><svg width="120" height="100" viewBox="0 0 120 100" aria-hidden="true">
-      <line x1="60" y1="12" x2="104" y2="44"/><line x1="60" y1="12" x2="87" y2="88"/><line x1="60" y1="12" x2="33" y2="88"/><line x1="60" y1="12" x2="16" y2="44"/>
-      <line x1="104" y1="44" x2="87" y2="88"/><line x1="104" y1="44" x2="33" y2="88"/><line x1="104" y1="44" x2="16" y2="44"/>
-      <line x1="87" y1="88" x2="33" y2="88"/><line x1="87" y1="88" x2="16" y2="44"/><line x1="33" y1="88" x2="16" y2="44"/>
-      <circle cx="60" cy="12" r="7"/><circle cx="104" cy="44" r="7"/><circle cx="87" cy="88" r="7"/><circle cx="33" cy="88" r="7"/><circle cx="16" cy="44" r="7"/>
-    </svg><figcaption>Fully connected</figcaption></figure>
-    <figure><svg width="140" height="100" viewBox="0 0 140 100" aria-hidden="true">
-      <line x1="14" y1="50" x2="126" y2="50"/>
-      <circle cx="14" cy="50" r="7"/><circle cx="42" cy="50" r="7"/><circle cx="70" cy="50" r="7"/><circle cx="98" cy="50" r="7"/><circle cx="126" cy="50" r="7"/>
-    </svg><figcaption>Line</figcaption></figure>
-    <figure><svg width="120" height="100" viewBox="0 0 120 100" aria-hidden="true">
-      <polygon points="60,12 104,44 87,88 33,88 16,44" fill="none" stroke="currentColor" style="stroke:var(--ink-2);stroke-width:1.5"/>
-      <circle cx="60" cy="12" r="7"/><circle cx="104" cy="44" r="7"/><circle cx="87" cy="88" r="7"/><circle cx="33" cy="88" r="7"/><circle cx="16" cy="44" r="7"/>
-    </svg><figcaption>Ring</figcaption></figure>
-    <figure><svg width="100" height="100" viewBox="0 0 100 100" aria-hidden="true">
-      <line x1="15" y1="15" x2="85" y2="15"/><line x1="15" y1="50" x2="85" y2="50"/><line x1="15" y1="85" x2="85" y2="85"/>
-      <line x1="15" y1="15" x2="15" y2="85"/><line x1="50" y1="15" x2="50" y2="85"/><line x1="85" y1="15" x2="85" y2="85"/>
-      <circle cx="15" cy="15" r="7"/><circle cx="50" cy="15" r="7"/><circle cx="85" cy="15" r="7"/>
-      <circle cx="15" cy="50" r="7"/><circle cx="50" cy="50" r="7"/><circle cx="85" cy="50" r="7"/>
-      <circle cx="15" cy="85" r="7"/><circle cx="50" cy="85" r="7"/><circle cx="85" cy="85" r="7"/>
-    </svg><figcaption>Square grid</figcaption></figure>
-  </div>
+  <p>Four generic graphs from the thesis, sized to the circuit, and two device layouts. Compilers may use any qubits of the device.</p>
+  <div class="topo-row" id="topo-row"></div>
+  <p class="note">An all-to-all trapped-ion device (IonQ) has the connectivity of the fully connected graph. It is not compiled
+  separately; it only has its own noise model in the hardware section.</p>
 
   <h3>Compilers</h3>
   <p>Each compiler gets the oracle in the form it supports best and uses its own standard pipeline at its highest
-  optimisation setting. Where a tool has a Boolean-function interface, it is used; otherwise the permutation matrix is passed.</p>
+  optimisation setting. Where a tool has a Boolean-function interface, it is used; otherwise the permutation matrix is passed.
+  The compilers fall into two groups, which are shown separately in the charts.</p>
   <div class="table-wrap"><table>
-    <tr><th>Compiler</th><th>Version</th><th>Input</th><th>Pipeline</th><th>Native gates</th></tr>
-    <tr><td>Qiskit (expression)</td><td data-version="qiskit"></td><td>Boolean expression (<code>BitFlipOracleGate</code>)</td><td><code>transpile</code>, optimisation level 3, Sabre routing</td><td>Rx, Ry, Rz, P, CX</td></tr>
-    <tr><td>Qiskit (matrix)</td><td data-version="qiskit"></td><td>Permutation matrix (<code>UnitaryGate</code>)</td><td>same as above</td><td>Rx, Ry, Rz, P, CX</td></tr>
-    <tr><td>tket</td><td data-version="pytket"></td><td>Permutation (<code>ToffoliBox</code>)</td><td><code>FullPeepholeOptimise</code>, <code>DefaultMappingPass</code>, post-routing resynthesis</td><td>Rx, Ry, Rz, CX</td></tr>
-    <tr><td>Cirq</td><td data-version="cirq-core"></td><td>Matrix</td><td>Quantum Shannon decomposition, <code>optimize_for_target_gateset</code>, <code>RouteCQC</code></td><td>PhasedXZ, CZ</td></tr>
-    <tr><td>quilc (Rigetti)</td><td data-version="quilc"></td><td>Permutation (<code>DEFGATE … AS PERMUTATION</code>)</td><td>quilc command line with a custom chip description</td><td>RX, RZ, CZ</td></tr>
-    <tr><td>PennyLane</td><td data-version="pennylane"></td><td>Matrix (<code>QubitUnitary</code>)</td><td><code>decompose</code>, <code>compile</code>, <code>transpile</code> (SWAP routing)</td><td>RX, RY, RZ, CNOT</td></tr>
-    <tr><td>Qibo</td><td data-version="qibo"></td><td>Matrix (<code>Unitary</code>)</td><td>Transpiler preset, optimisation level 2, Sabre placement and routing</td><td>U3, CNOT</td></tr>
-    <tr><td>BQSKit</td><td data-version="bqskit"></td><td>Matrix</td><td><code>compile</code>, optimisation level 2, numerical synthesis with mapping</td><td>Rx, Ry, Rz, CNOT</td></tr>
-    <tr><td>Qrisp (Gray / PPRM)</td><td data-version="qrisp"></td><td>Truth table (<code>TruthTable.q_synth</code>)</td><td>Logic synthesis, then translation to the gate set without further optimisation; no routing</td><td>Rx, Ry, Rz, P, CX</td></tr>
-    <tr><td>Textbook construction</td><td data-version="qiskit"></td><td>Hand-written circuit: one multi-controlled X for AND and OR, one CX per input for XOR</td><td>Mapped by Qiskit with the same settings</td><td>Rx, Ry, Rz, P, CX</td></tr>
+    <thead><tr><th>Compiler</th><th>Version</th><th>Input</th><th>Pipeline</th></tr></thead>
+    <tbody>
+    <tr class="grp"><td colspan="4">Uses the Boolean function</td></tr>
+    <tr><td>Qiskit (expression)</td><td data-version="qiskit"></td><td>Boolean expressions (<code>BitFlipOracleGate</code>)</td><td><code>transpile</code>, optimisation level 3, Sabre routing</td></tr>
+    <tr><td>tket</td><td data-version="pytket"></td><td>Permutation (<code>ToffoliBox</code>)</td><td><code>FullPeepholeOptimise</code>, <code>DefaultMappingPass</code>, resynthesis after routing</td></tr>
+    <tr><td>quilc (Rigetti)</td><td data-version="quilc"></td><td>Permutation (<code>DEFGATE … AS PERMUTATION</code>)</td><td>quilc command line with a custom chip description</td></tr>
+    <tr><td>Qrisp (PPRM / Gray)</td><td data-version="qrisp"></td><td>Truth table (<code>TruthTable.q_synth</code>)</td><td>Logic synthesis, translation to the gate set without optimisation, Sabre routing from Qiskit</td></tr>
+    <tr><td>MQT (SyReC + QMAP)</td><td data-version="mqt-qmap"></td><td>SyReC program of the expressions</td><td>Line-aware SyReC synthesis, helper lines uncomputed, QMAP heuristic mapping with its optimisations</td></tr>
+    <tr><td>Textbook construction</td><td data-version="qiskit"></td><td>Hand-written circuit (AND, OR, XOR, thesis functions)</td><td>Mapped by Qiskit with the same settings; a reference point, not a compiler</td></tr>
+    <tr class="grp"><td colspan="4">Generic matrix synthesis</td></tr>
+    <tr><td>Qiskit (matrix)</td><td data-version="qiskit"></td><td>Permutation matrix (<code>UnitaryGate</code>)</td><td><code>transpile</code>, optimisation level 3</td></tr>
+    <tr><td>Cirq</td><td data-version="cirq-core"></td><td>Matrix</td><td>Quantum Shannon decomposition, <code>optimize_for_target_gateset</code>, <code>RouteCQC</code></td></tr>
+    <tr><td>PennyLane</td><td data-version="pennylane"></td><td>Matrix (<code>QubitUnitary</code>)</td><td><code>decompose</code>, <code>compile</code>, <code>transpile</code></td></tr>
+    <tr><td>Qibo</td><td data-version="qibo"></td><td>Matrix (<code>Unitary</code>)</td><td>Transpiler preset, optimisation level 2, Sabre placement and routing</td></tr>
+    <tr><td>BQSKit</td><td data-version="bqskit"></td><td>Matrix</td><td><code>compile</code>, optimisation level 2, numerical synthesis with mapping</td></tr>
+    </tbody>
   </table></div>
-  <p class="note">Cirq and quilc use CZ instead of CNOT. One CNOT equals one CZ plus single-qubit gates, so two-qubit gate counts are directly comparable.
-  The "textbook construction" is not a compiler. It shows what is possible when the structure of the function is used directly.</p>
+  <p class="note">Cirq and quilc use CZ instead of CNOT; one CNOT equals one CZ plus single-qubit gates, so the counts are comparable.
+  Matrix input is limited to 12 qubits (a 4096 × 4096 matrix).</p>
 
   <h3>Measurements and correctness check</h3>
   <ul>
-    <li>Number of two-qubit gates, number of all gates, and the wall-clock time of the compile call.</li>
-    <li>Each job runs in its own process with a limit of 300 seconds. When a size times out, larger sizes of the same series are not attempted.</li>
-    <li>Every result is simulated. Using the initial and final qubit placement reported by the compiler, every basis input is checked to map
-    to the right output with a common phase, i.e. the circuit equals the oracle up to a global phase (infidelity below 10<sup>−6</sup>;
-    BQSKit synthesises numerically and is therefore approximate). For large circuits a random subset of inputs is checked.
-    Results that fail the check are marked with ✗ and not drawn in the charts.</li>
-    <li>For routed results it is also checked that every two-qubit gate acts on connected qubits.</li>
+    <li><b>Gate counts and depth</b> of the compiled circuit, including SWAPs (counted as three two-qubit gates).</li>
+    <li><b>T-count:</b> every single-qubit gate is written as R<sub>z</sub>R<sub>x</sub>R<sub>z</sub>. An angle that is an odd multiple of π/4
+    counts as one T gate, a multiple of π/2 is free (Clifford). Any other angle is counted separately as an <em>arbitrary rotation</em>,
+    which a fault-tolerant computer would have to approximate with many T gates. No compiler here optimises for T-count.</li>
+    <li><b>Compile time and peak memory</b> of the compile process (memory includes loading the library).</li>
+    <li>Each job runs in its own process with a time limit (<span id="timeout-note">600 s</span>; BQSKit gets twice as long).
+    When a size times out, larger sizes of the same series are not attempted.</li>
+    <li><b>Correctness:</b> every circuit is simulated. With the initial and final qubit placement reported by the compiler, every basis input
+    (or a random subset for large circuits) must map to the right output with a common phase, with infidelity below 10<sup>−6</sup>.
+    Helper qubits must start and end in |0⟩. Wrong results are marked ✗ and left out of the charts. Circuits on more than 24 qubits are not simulated.</li>
   </ul>
 </section>
 
 <section id="results">
   <h2>Results</h2>
-  <h3>Multi-input AND, OR and XOR</h3>
+  <p>Each panel is one layout; the x-axis is the number of logical qubits (inputs plus outputs). Logarithmic y-axis.
+  Hollow points are circuits too large to simulate. Missing points mean a timeout, an error or a wrong result; see the coverage table.</p>
   <div class="controls">
-    <div class="seg" id="func-seg" role="group" aria-label="Function"></div>
-    <div class="seg" id="metric-seg" role="group" aria-label="Metric"></div>
+    <label class="sel">Function <select id="func-sel"></select></label>
+    <div class="seg" id="family-seg" role="group" aria-label="Compiler group"></div>
   </div>
+  <div class="controls"><div class="seg wrap" id="metric-seg" role="group" aria-label="Metric"></div></div>
   <div class="legend" id="legend"></div>
-  <p class="note">Logarithmic y-axis. Missing points mean a timeout, an error, or a result that failed the correctness check (see the table below).</p>
-  <div class="grid4" id="charts"></div>
+  <div class="grid3" id="charts"></div>
   <details>
     <summary>Show the numbers as a table</summary>
     <div class="table-wrap" id="main-table"></div>
   </details>
+</section>
 
-  <h3>Small functions</h3>
-  <p>Two-qubit gates / all gates on the fully connected layout. These cases check whether a compiler notices that little or nothing has to be done:
-  always-0 needs no gate, always-1 one X gate, identity one CNOT.</p>
-  <div class="table-wrap" id="small-table"></div>
+<section id="coverage">
+  <h2>Coverage</h2>
+  <p>Largest verified circuit (logical qubits) per compiler and function, and why the series stopped. A darker cell means a larger share of the
+  tested sizes was compiled correctly.</p>
+  <div class="controls"><div class="seg wrap" id="cov-topo-seg" role="group" aria-label="Layout"></div></div>
+  <div class="table-wrap" id="coverage-table"></div>
+  <p class="note">⏱ time limit reached, M memory limit (3.5 GB per job) reached, ✗ wrong result, ! error raised by the compiler, ∅ not run (the compiler or textbook construction does not cover this function).</p>
+</section>
 
-  <h3>Run overview</h3>
-  <div class="table-wrap" id="summary-table"></div>
+<section id="hardware">
+  <h2>Hardware and noise</h2>
+  <p>Fewer gates only matter if they lead to better results on hardware. As a simple estimate, the success probability of a circuit is
+  the product of the gate fidelities, (1 − <i>e</i><sub>1</sub>)<sup><i>N</i><sub>1</sub></sup> (1 − <i>e</i><sub>2</sub>)<sup><i>N</i><sub>2</sub></sup>,
+  with <i>N</i><sub>1</sub>, <i>N</i><sub>2</sub> the numbers of single- and two-qubit gates. This ignores decoherence during idle times,
+  crosstalk and readout (readout is the same for every compiler). The error rates are representative values for one device of each family:</p>
+  <div class="table-wrap" id="noise-table"></div>
+  <div class="controls">
+    <label class="sel">Function <select id="hw-func"></select></label>
+    <label class="sel">Qubits <select id="hw-size"></select></label>
+  </div>
+  <div class="table-wrap" id="hw-table"></div>
+</section>
+
+<section id="studies">
+  <h2>Studies</h2>
+  <h3>Optimisation levels</h3>
+  <p>The main results use each compiler's highest setting. Here Qiskit (levels 0 to 3) and tket (0: no optimisation, 1: <code>SynthesiseTket</code>,
+  2: <code>FullPeepholeOptimise</code>) are compared, and MQT's line-aware synthesis with its cost-aware variant, which uses more helper lines.</p>
+  <div class="controls">
+    <div class="seg" id="lvl-func-seg" role="group" aria-label="Function"></div>
+    <div class="seg" id="lvl-topo-seg" role="group" aria-label="Layout"></div>
+  </div>
+  <div class="grid3" id="lvl-charts"></div>
+
+  <h3>Helper qubits (ancillas)</h3>
+  <p>AND and OR are a single multi-controlled X gate (MCX). Qiskit offers several MCX constructions that trade helper qubits for gates.
+  Clean helpers start in |0⟩; dirty helpers may be in any state and are restored.</p>
+  <div class="controls">
+    <div class="seg" id="anc-func-seg" role="group" aria-label="Function"></div>
+    <div class="seg" id="anc-topo-seg" role="group" aria-label="Layout"></div>
+    <div class="seg" id="anc-metric-seg" role="group" aria-label="Metric"></div>
+  </div>
+  <div class="legend" id="anc-legend"></div>
+  <div class="narrow" id="anc-chart"></div>
+  <p class="note">The x-axis counts the logical qubits only (inputs and output); the helper qubits come on top.
+  Dirty helpers are checked with helpers in |0⟩ only.</p>
 </section>
 
 <section id="then-now">
   <h2>2022 vs. now</h2>
-  <p>Dashed lines are the numbers reported in the thesis (submitted January 2023, software versions of late 2022).
-  Solid lines are this run. For pyQuil 2022 the count includes CZ and XY gates, since both are two-qubit gates.
-  The 2022 Qiskit numbers used <code>BooleanExpression</code> with the Tweedledum synthesis library, which is no longer part of Qiskit 2.
-  The current Qiskit numbers use its successor, <code>BitFlipOracleGate</code>. The pyQuil 2022 setup allowed CZ and XY gates, the current quilc setup only CZ.</p>
+  <p>Dashed lines are the numbers reported in the thesis (software of late 2022), solid lines the latest run.
+  For pyQuil 2022 the count includes CZ and XY gates. The 2022 Qiskit numbers used <code>BooleanExpression</code> with the Tweedledum library,
+  which is no longer part of Qiskit; the current numbers use its successor, <code>BitFlipOracleGate</code>.</p>
   <div class="controls">
     <div class="seg" id="old-func-seg" role="group" aria-label="Function"></div>
-    <div class="seg" id="old-topo-seg" role="group" aria-label="Topology"></div>
+    <div class="seg" id="old-topo-seg" role="group" aria-label="Layout"></div>
   </div>
   <div class="legend" id="old-legend"></div>
-  <div id="old-chart" style="max-width:560px"></div>
+  <div class="narrow" id="old-chart"></div>
+</section>
+
+<section id="time">
+  <h2>Over time</h2>
+  <p>The benchmark runs on GitHub Actions on the first day of every month with the newest release of every compiler.
+  Each run is stored with its exact versions, so changes between releases show up here.</p>
+  <div class="table-wrap" id="runs-table"></div>
+  <div class="controls">
+    <label class="sel">Function <select id="hist-func"></select></label>
+    <label class="sel">Layout <select id="hist-topo"></select></label>
+    <label class="sel">Qubits <select id="hist-size"></select></label>
+  </div>
+  <div class="table-wrap" id="hist-table"></div>
 </section>
 
 <section id="discussion">
   <h2>Discussion</h2>
   <div id="discussion-body">
-    <h3>Structure-aware versus generic synthesis</h3>
-    <p>The oracles studied here are permutation matrices with very regular structure: AND and OR are a single multi-controlled X gate
-    (with X gates around it for OR), and XOR is a row of CNOTs. The results show two groups of compilers. Generic unitary synthesis,
-    such as the quantum Shannon decomposition used by Cirq, PennyLane and Qibo and by Qiskit for a
-    <code>UnitaryGate</code>, produces circuits that grow exponentially in the number of qubits. This is independent of how simple the function is.
-    The XOR oracle, which needs only <i>n</i> CNOTs, costs these methods as much as AND or OR.</p>
-    <p>Compilers or interfaces that look at the function itself are orders of magnitude better, but each one only for some functions.
-    quilc finds the optimal circuit for XOR, but not for AND and OR. Qiskit's
-    <code>BitFlipOracleGate</code> turns a single AND into one multi-controlled X, but expands XOR into a large cascade.
-    Qrisp's PPRM synthesis (positive-polarity Reed–Muller form) is optimal for XOR and good for AND, but weak for OR, whose Reed–Muller
-    form has 2<sup><i>n</i></sup> − 1 terms.</p>
-    <h3>Changes since 2022</h3>
-    <p>Compiler versions changed a lot in four years, and the changes are not monotonic. Qiskit replaced its Tweedledum-based Boolean
-    synthesis, which improved AND and OR but lost the efficient XOR. tket's AND result in 2022 came from a special decomposition for
-    multi-controlled X gates. The current numbers suggest that this special case is no longer used for a <code>ToffoliBox</code>,
-    and AND now costs about five times more at 10 qubits. For anyone who relies on a specific compiler result, this suggests checking gate counts again after upgrades.</p>
-    <h3>Qubit layout</h3>
-    <p>Restricted layouts add SWAP overhead, typically a factor of about 1.5 to 4.5 over the fully connected case for the same compiler.
-    The grid, which offers spare qubits and more connections, is usually between line and fully connected. The ranking of the
-    compilers stays mostly the same across layouts.</p>
-    <h3>Small functions</h3>
-    <p>All compilers recognise that always-0, always-1 and identity need no or one two-qubit gate, with two exceptions: BQSKit returns two
-    CNOTs that cancel for always-0, and Qrisp's Gray synthesis uses two CNOTs for the identity. For the two-of-three (majority) function,
-    Qrisp's Gray synthesis needs 12 CNOTs, fewer than the 18 of the textbook construction with three Toffoli gates; quilc also reaches 18.</p>
+    <p>The main result of the thesis still holds: a compiler that knows it is compiling a Boolean function produces far smaller circuits than one that only sees the matrix. The gap grows with the number of qubits, since generic unitary synthesis needs on the order of 4<sup>n</sup> two-qubit gates, while the best Boolean synthesis for AND, OR, the comparator and the adder grows roughly linearly or quadratically.</p>
+    <p>Among the Boolean methods the choice of synthesis matters more than the choice of compiler. Functions with a short expression (AND, XOR, the adder) are compiled well by expression-based tools (MQT, Qiskit, Qrisp PPRM). Functions given only as a truth table, or with many product terms (majority, random functions), favour Qrisp's Gray synthesis, which uses phase rotations instead of Toffoli gates. That has a cost the two-qubit count does not show: its circuits need arbitrary-angle rotations, which are expensive on a fault-tolerant computer, while MQT and Qiskit produce Clifford+T circuits (see the T-count and rotation metrics).</p>
+    <p>MQT uses extra helper lines from its SyReC synthesis, so its circuits use more qubits than the others (for example 11 helpers for a random 3-input function). On restricted layouts these helpers have to be routed too, which is why MQT's layout overhead is larger than that of most other compilers.</p>
+    <p>Optimisation levels matter mainly on restricted layouts. On the fully connected layout Qiskit's levels 0 to 3 differ by at most 2 %; on heavy-hex level 0 needs a median of 1.9 times (up to 2.8 times) the two-qubit gates of level 3. For tket the highest level changes nothing for AND and OR, but saves up to 88 % for XOR, majority and the adder.</p>
+    <p>The estimated success probability is a simple model (independent gate errors, no idle or readout errors), but it shows the practical consequence: on today's devices only circuits with at most a few hundred two-qubit gates have a reasonable chance of giving the right answer, which rules out generic synthesis beyond about 5 qubits.</p>
   </div>
+  <h3>What could be improved</h3>
+  <ul id="improve">
+    <li><b>More synthesis methods for the same function.</b> ESOP-based synthesis (as in the old tweedledum library or Caterpillar), LUT-based hierarchical synthesis, or exact synthesis for small functions would show how far the current compilers are from the best known circuits.</li>
+    <li><b>Phase oracles.</b> Many algorithms (Grover, Deutsch-Jozsa) only need the phase version (−1)<sup>f(x)</sup>, which saves the output qubit and often half of the gates.</li>
+    <li><b>Larger functions from real use</b>, for example the arithmetic and control benchmarks of the EPFL suite or RevLib, instead of only synthetic functions.</li>
+    <li><b>Noise-aware compilation and real calibration data.</b> The success estimate uses one representative error rate per platform. Daily calibration data, or a short run on real hardware, would show whether the ranking holds.</li>
+    <li><b>Fault-tolerant cost.</b> Counting T gates after synthesising the arbitrary rotations (for example with gridsynth) would compare the Gray and Toffoli-based approaches fairly.</li>
+    <li><b>Statistics.</b> Compilers with random choices (Sabre, quilc, BQSKit) should be run with several seeds and reported with a spread.</li>
+  </ul>
   <h3>Limitations</h3>
-  <ul>
-    <li>Only a small, symmetric family of functions is tested. Results may differ for random or structured functions.</li>
-    <li>Each compiler is used with one reasonable configuration. Other settings or plugins may give better numbers.</li>
-    <li>No ancilla qubits are given to the compilers, except the spare qubits of the grid layout.</li>
-    <li>Compile times were measured on a shared 4-core cloud machine and are only indicative.</li>
-    <li>Gate counts do not include hardware noise or circuit depth.</li>
-    <li>The Qrisp circuits are translated to the gate set with Qiskit without optimisation, and Qrisp has no routing, so it is only run on the fully connected layout.</li>
-    <li>For Cirq, the matrix is decomposed with <code>cirq.quantum_shannon_decomposition</code>, because the default
-    <code>optimize_for_target_gateset</code> still leaves matrix gates on more than three qubits undecomposed (as in 2022).</li>
+  <ul id="limits">
+    <li>The matrix input is limited to 12 qubits (a 4,096 × 4,096 matrix); in practice matrix synthesis stops at 6 to 10 qubits because of the 600 s time limit (1,200 s for BQSKit, which reaches only 4 to 5 qubits).</li>
+    <li>Each job has a memory limit of 3.5 GB (status "memory limit"); this ends, for example, Qiskit's XOR series at 15 qubits and quilc's larger cases. Peak memory includes importing the libraries (about 100 to 300 MB).</li>
+    <li>Circuits with more than 24 used qubits are not simulated (marked "not simulated"); circuits with more than about 16 qubits are checked on a random sample of inputs.</li>
+    <li>Helper qubits are checked only for the input |0⟩. Helpers declared as "dirty" are not tested with other starting states.</li>
+    <li>MQT synthesises from the Boolean expression with SyReC; its line-aware synthesis needs more helper lines than heavy-hex (57) or Sycamore (54) have for majority and random functions with 5 or more inputs.</li>
+    <li>quilc runs out of memory or heap at 7 to 9 qubits in many cases.</li>
+    <li>IonQ is modelled only by its error rates on the fully connected layout; its native gates (MS, GPi) are not used.</li>
+    <li>staq is not included, because its Python package (pystaq) has no installable release for current Python versions; building it from source was not part of this setup.</li>
+    <li>The Qrisp results on restricted layouts depend on Qiskit's Sabre routing, since Qrisp has no routing of its own.</li>
   </ul>
 </section>
 
 <section id="reproduce">
   <h2>Reproduce</h2>
-  <p>The code is in the <a href="https://github.com/jannikpflieger/quantum_compiler_benchmark_on_boolean_matricies">GitHub repository</a>.</p>
-<pre><code>python -m venv .venv && . .venv/bin/activate
-pip install -r requirements.txt
+  <p>Every run stores its results and exact package versions under <code>results/runs/</code>. To repeat a run locally:</p>
+<pre><code>python -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
 python -m venv venvs/qrisp && venvs/qrisp/bin/pip install -r requirements-qrisp.txt
-docker pull rigetti/quilc
-python -m bench.run --timeout 300 --workers 4   # writes results/results.jsonl
-python -m bench.export                          # writes docs/data/results.json</code></pre>
+python -m venv venvs/mqt && venvs/mqt/bin/pip install -r requirements-mqt.txt
+docker pull rigetti/quilc:1.26.0
+python -m bench.run --list                                   # shard names
+python -m bench.run --shard main/tket/line --out out.jsonl   # one shard
+python -m bench.job mqt adder 4 heavy_hex                    # one job</code></pre>
+  <p>The workflow <code>.github/workflows/benchmark.yml</code> runs all shards in parallel and can be started by hand with pinned or newest versions.</p>
 </section>
 
 <footer>
   Original work: J. Pflieger, <i>Benchmarking Quantum Compilers Based on Boolean Functions</i>, bachelor thesis,
-  Goethe University Frankfurt, January 2023.
-  Re-run in November 2026. Data: <a href="data/results.json">results.json</a>.
+  Goethe University Frankfurt, January 2023. Data of the latest run: <a href="data/results.json">results.json</a>.
 </footer>
 </main>
 <script src="app.js"></script>

@@ -7,6 +7,7 @@ qibo==0.3.7
 numpy==2.4.6
 scipy==1.18.1
 networkx==3.7
+rustworkx==0.18.1
 # only needed to read the original thesis spreadsheets
 odfpy
 pandas

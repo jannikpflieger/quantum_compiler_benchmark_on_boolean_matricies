@@ -1,0 +1,4 @@
+mqt-core
+mqt-qmap
+mqt-syrec
+qiskit
